@@ -17,7 +17,11 @@ interface DashboardScreenProps {
   weeklyData: WeeklyDataItem[];
 }
 
-const DashboardScreen = ({ steps, dailyGoal, weeklyData }: DashboardScreenProps) => (
+const DashboardScreen = ({
+  steps,
+  dailyGoal,
+  weeklyData,
+}: DashboardScreenProps) => (
   <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
     <GlassCard style={styles.mainProgressCard}>
       <ProgressRing steps={steps} dailyGoal={dailyGoal} />
@@ -25,16 +29,12 @@ const DashboardScreen = ({ steps, dailyGoal, weeklyData }: DashboardScreenProps)
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <Flame color="#FF7E5F" size={24} />
-          <Text style={styles.statValue}>
-            {(steps * 0.04).toFixed(1)}
-          </Text>
+          <Text style={styles.statValue}>{(steps * 0.04).toFixed(1)}</Text>
           <Text style={styles.statLabel}>kcal</Text>
         </View>
         <View style={styles.statItem}>
           <Trophy color="#FFCC00" size={24} />
-          <Text style={styles.statValue}>
-            {(steps * 0.0008).toFixed(2)}
-          </Text>
+          <Text style={styles.statValue}>{(steps * 0.0008).toFixed(2)}</Text>
           <Text style={styles.statLabel}>km</Text>
         </View>
       </View>
@@ -47,14 +47,14 @@ const DashboardScreen = ({ steps, dailyGoal, weeklyData }: DashboardScreenProps)
         barWidth={22}
         noOfSections={3}
         barBorderRadius={4}
-        frontColor="lightgray"
+        frontColor="#FF6A00"
         yAxisThickness={0}
         xAxisThickness={0}
         hideRules
         isAnimated
         animationDuration={1000}
-        xAxisLabelTextStyle={{ color: "white", fontSize: 10 }}
-        yAxisTextStyle={{ color: "white", fontSize: 10 }}
+        xAxisLabelTextStyle={{ color: "#636E72", fontSize: 10 }}
+        yAxisTextStyle={{ color: "#636E72", fontSize: 10 }}
       />
     </GlassCard>
 
@@ -83,17 +83,17 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "white",
+    color: "#2D3436",
     marginTop: 5,
   },
   statLabel: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.6)",
+    color: "#636E72",
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "white",
+    color: "#2D3436",
     marginBottom: 15,
     marginTop: 10,
   },

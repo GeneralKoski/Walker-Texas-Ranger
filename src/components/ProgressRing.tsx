@@ -43,7 +43,7 @@ const ProgressRing = ({ steps, dailyGoal }: ProgressRingProps) => {
           cx="100"
           cy="100"
           r="80"
-          stroke="rgba(255, 255, 255, 0.1)"
+          stroke="#F1F2F6"
           strokeWidth="20"
           fill="none"
         />
@@ -81,16 +81,16 @@ const styles = StyleSheet.create({
   stepCountText: {
     fontSize: 48,
     fontWeight: "800",
-    color: "white",
+    color: "#2D3436",
   },
   stepSubText: {
     fontSize: 16,
-    color: "rgba(255,255,255,0.7)",
+    color: "#636E72",
     marginTop: -5,
   },
   goalText: {
     fontSize: 14,
-    color: "rgba(255,255,255,0.5)",
+    color: "#A0A0A0",
     marginTop: 10,
   },
 });

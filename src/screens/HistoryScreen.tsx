@@ -9,8 +9,8 @@ import {
   View,
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import GlassCard from "../components/GlassCard";
 import { getStepsRange } from "../../db";
+import GlassCard from "../components/GlassCard";
 
 interface HistoryItem {
   id: number;
@@ -69,9 +69,7 @@ const HistoryScreen = ({ dailyGoal }: HistoryScreenProps) => {
               <Text style={styles.historySteps}>{item.count} passi</Text>
             </View>
             <CheckCircle2
-              color={
-                item.count >= dailyGoal ? "#4CD964" : "rgba(255,255,255,0.3)"
-              }
+              color={item.count >= dailyGoal ? "#4CD964" : "#DCDDE1"}
               size={24}
             />
           </GlassCard>
@@ -110,12 +108,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "white",
+    color: "#2D3436",
     marginBottom: 15,
     marginTop: 10,
   },
   filterBtn: {
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "#FF6A00",
     paddingHorizontal: 15,
     paddingVertical: 6,
     borderRadius: 20,
@@ -123,6 +121,7 @@ const styles = StyleSheet.create({
   filterBtnText: {
     color: "white",
     fontSize: 12,
+    fontWeight: "600",
   },
   historyItem: {
     flexDirection: "row",
@@ -131,16 +130,16 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   historyDate: {
-    color: "white",
+    color: "#2D3436",
     fontSize: 16,
     fontWeight: "600",
   },
   historySteps: {
-    color: "rgba(255,255,255,0.7)",
+    color: "#636E72",
     fontSize: 14,
   },
   emptyText: {
-    color: "rgba(255,255,255,0.5)",
+    color: "#A0A0A0",
     textAlign: "center",
     marginTop: 50,
   },

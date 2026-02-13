@@ -1,6 +1,5 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { type ReactNode } from "react";
-import { StyleSheet, type StyleProp, View, type ViewStyle } from "react-native";
+import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 
 interface GlassCardProps {
   children: ReactNode;
@@ -8,13 +7,7 @@ interface GlassCardProps {
 }
 
 const GlassCard = ({ children, style }: GlassCardProps) => (
-  <View style={[styles.glassCard, style]}>
-    <LinearGradient
-      colors={["rgba(255, 255, 255, 0.2)", "rgba(255, 255, 255, 0.05)"]}
-      style={StyleSheet.absoluteFillObject}
-    />
-    {children}
-  </View>
+  <View style={[styles.glassCard, style]}>{children}</View>
 );
 
 const styles = StyleSheet.create({
@@ -23,8 +16,14 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 20,
     overflow: "hidden",
+    backgroundColor: "white",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
+    borderColor: "rgba(0, 0, 0, 0.05)",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
   },
 });
 

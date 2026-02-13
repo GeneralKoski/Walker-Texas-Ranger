@@ -28,10 +28,7 @@ const TabBar = ({ currentTab, onTabChange }: TabBarProps) => (
         onPress={() => onTabChange(key)}
         style={styles.tabItem}
       >
-        <Icon
-          color={currentTab === key ? "white" : "rgba(255,255,255,0.5)"}
-          size={24}
-        />
+        <Icon color={currentTab === key ? "#FF6A00" : "#A0A0A0"} size={24} />
         <Text
           style={[styles.tabLabel, currentTab === key && styles.tabLabelActive]}
         >
@@ -46,11 +43,16 @@ const styles = StyleSheet.create({
   tabBar: {
     height: 70,
     flexDirection: "row",
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: "white",
     borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.1)",
+    borderTopColor: "rgba(0,0,0,0.05)",
     alignItems: "center",
     justifyContent: "space-around",
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   tabItem: {
     flex: 1,
@@ -58,11 +60,12 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 10,
-    color: "rgba(255,255,255,0.5)",
+    color: "#A0A0A0",
     marginTop: 4,
   },
   tabLabelActive: {
-    color: "white",
+    color: "#FF6A00",
+    fontWeight: "600",
   },
 });
 

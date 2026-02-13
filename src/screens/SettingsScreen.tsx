@@ -1,4 +1,11 @@
-import { StyleSheet, Text, TextInput, type NativeSyntheticEvent, type TextInputEndEditingEventData, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  type NativeSyntheticEvent,
+  type TextInputEndEditingEventData,
+} from "react-native";
 import GlassCard from "../components/GlassCard";
 
 interface SettingsScreenProps {
@@ -7,7 +14,11 @@ interface SettingsScreenProps {
   isPedometerAvailable: string;
 }
 
-const SettingsScreen = ({ dailyGoal, onUpdateGoal, isPedometerAvailable }: SettingsScreenProps) => (
+const SettingsScreen = ({
+  dailyGoal,
+  onUpdateGoal,
+  isPedometerAvailable,
+}: SettingsScreenProps) => (
   <View style={styles.content}>
     <Text style={styles.sectionTitle}>Impostazioni</Text>
     <GlassCard style={styles.settingsCard}>
@@ -20,7 +31,7 @@ const SettingsScreen = ({ dailyGoal, onUpdateGoal, isPedometerAvailable }: Setti
         onEndEditing={(e: NativeSyntheticEvent<TextInputEndEditingEventData>) =>
           onUpdateGoal(e.nativeEvent.text)
         }
-        placeholderTextColor="rgba(255,255,255,0.5)"
+        placeholderTextColor="#A0A0A0"
       />
       <Text style={styles.settingsHint}>
         Consigliato: 10,000 passi per restare in salute.
@@ -46,7 +57,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "white",
+    color: "#2D3436",
     marginBottom: 15,
     marginTop: 10,
   },
@@ -54,20 +65,20 @@ const styles = StyleSheet.create({
     paddingVertical: 25,
   },
   label: {
-    color: "rgba(255,255,255,0.7)",
+    color: "#636E72",
     fontSize: 14,
     marginBottom: 10,
   },
   input: {
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "#F1F2F6",
     borderRadius: 12,
     padding: 15,
-    color: "white",
+    color: "#2D3436",
     fontSize: 18,
     fontWeight: "bold",
   },
   settingsHint: {
-    color: "rgba(255,255,255,0.4)",
+    color: "#A0A0A0",
     fontSize: 12,
     marginTop: 10,
   },
@@ -75,13 +86,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   aboutTitle: {
-    color: "white",
+    color: "#2D3436",
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
   },
   aboutText: {
-    color: "rgba(255,255,255,0.6)",
+    color: "#636E72",
     fontSize: 14,
     marginBottom: 5,
   },

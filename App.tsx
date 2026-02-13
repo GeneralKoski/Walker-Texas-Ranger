@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { LinearGradient } from "expo-linear-gradient";
 import { Pedometer } from "expo-sensors";
 import type { Subscription } from "expo-sensors/build/Pedometer";
 import { useEffect, useRef, useState } from "react";
@@ -111,11 +110,8 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <View style={styles.container}>
-        <StatusBar barStyle="light-content" />
-        <LinearGradient
-          colors={["#6A11CB", "#2575FC"]}
-          style={StyleSheet.absoluteFill}
-        />
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.background} />
 
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.topBar}>
@@ -148,6 +144,11 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#F8F9FA",
+  },
+  background: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "#F8F9FA",
   },
   safeArea: {
     flex: 1,
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
   appTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "white",
+    color: "#FF6A00",
     letterSpacing: 1,
   },
 });
