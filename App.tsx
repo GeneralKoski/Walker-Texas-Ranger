@@ -3,21 +3,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Pedometer } from "expo-sensors";
 import type { Subscription } from "expo-sensors/build/Pedometer";
 import { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Alert, StatusBar, StyleSheet, Text, View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-import TabBar, { type TabKey } from "./src/components/TabBar";
-import DashboardScreen, {
-  type WeeklyDataItem,
-} from "./src/screens/DashboardScreen";
-import HistoryScreen from "./src/screens/HistoryScreen";
-import SettingsScreen from "./src/screens/SettingsScreen";
 import {
   getStepsByDate,
   getTarget,
@@ -26,6 +14,12 @@ import {
   saveDailySteps,
   setTarget,
 } from "./db";
+import TabBar, { type TabKey } from "./src/components/TabBar";
+import DashboardScreen, {
+  type WeeklyDataItem,
+} from "./src/screens/DashboardScreen";
+import HistoryScreen from "./src/screens/HistoryScreen";
+import SettingsScreen from "./src/screens/SettingsScreen";
 
 export default function App() {
   const [isPedometerAvailable, setIsPedometerAvailable] = useState("checking");
@@ -115,37 +109,39 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <LinearGradient
-        colors={["#6A11CB", "#2575FC"]}
-        style={StyleSheet.absoluteFill}
-      />
+    <SafeAreaProvider>
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <LinearGradient
+          colors={["#6A11CB", "#2575FC"]}
+          style={StyleSheet.absoluteFill}
+        />
 
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.topBar}>
-          <Text style={styles.appTitle}>Walker Texas Ranger</Text>
-        </View>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.topBar}>
+            <Text style={styles.appTitle}>Walker Texas Ranger</Text>
+          </View>
 
-        {currentTab === "home" && (
-          <DashboardScreen
-            steps={totalSteps}
-            dailyGoal={dailyGoal}
-            weeklyData={weeklyData}
-          />
-        )}
-        {currentTab === "history" && <HistoryScreen dailyGoal={dailyGoal} />}
-        {currentTab === "settings" && (
-          <SettingsScreen
-            dailyGoal={dailyGoal}
-            onUpdateGoal={handleUpdateGoal}
-            isPedometerAvailable={isPedometerAvailable}
-          />
-        )}
+          {currentTab === "home" && (
+            <DashboardScreen
+              steps={totalSteps}
+              dailyGoal={dailyGoal}
+              weeklyData={weeklyData}
+            />
+          )}
+          {currentTab === "history" && <HistoryScreen dailyGoal={dailyGoal} />}
+          {currentTab === "settings" && (
+            <SettingsScreen
+              dailyGoal={dailyGoal}
+              onUpdateGoal={handleUpdateGoal}
+              isPedometerAvailable={isPedometerAvailable}
+            />
+          )}
 
-        <TabBar currentTab={currentTab} onTabChange={setCurrentTab} />
-      </SafeAreaView>
-    </View>
+          <TabBar currentTab={currentTab} onTabChange={setCurrentTab} />
+        </SafeAreaView>
+      </View>
+    </SafeAreaProvider>
   );
 }
 

@@ -33,10 +33,7 @@ const TabBar = ({ currentTab, onTabChange }: TabBarProps) => (
           size={24}
         />
         <Text
-          style={[
-            styles.tabLabel,
-            currentTab === key && styles.tabLabelActive,
-          ]}
+          style={[styles.tabLabel, currentTab === key && styles.tabLabelActive]}
         >
           {label}
         </Text>
@@ -56,6 +53,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   tabItem: {
+    flex: 1,
     alignItems: "center",
   },
   tabLabel: {
