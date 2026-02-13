@@ -1,0 +1,30 @@
+{
+  "name": "ranger-walker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "expo": "^54.0.33",
+    "expo-linear-gradient": "~14.0.0",
+    "expo-sensors": "~14.0.0",
+    "expo-sqlite": "~15.0.0",
+    "expo-status-bar": "~2.0.0",
+    "lucide-react-native": "^0.475.0",
+    "react": "18.3.1",
+    "react-native": "0.76.7",
+    "react-native-gifted-charts": "^1.4.52",
+    "react-native-modal-datetime-picker": "^18.0.0",
+    "react-native-reanimated": "~3.16.0",
+    "react-native-svg": "15.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2"
+  },
+  "private": true
+}
