@@ -171,23 +171,30 @@ export default function App() {
           return;
         }
 
-        const start = new Date();
-        start.setHours(0, 0, 0, 0);
-        const end = new Date();
-
-        // Forza un refresh dei passi dall'hardware all'avvio
-        const result = await Pedometer.getStepCountAsync(start, end);
-        if (result) {
-          setPastStepCount(result.steps);
-          lastSavedStepsRef.current = result.steps;
+        // Su iOS possiamo recuperare i passi fatti finora oggi dal sistema.
+        // Su Android questa funzione NON è supportata e crasha, quindi usiamo solo il DB.
+        if (Platform.OS === "ios") {
+          const start = new Date();
+          start.setHours(0, 0, 0, 0);
+          const end = new Date();
+          try {
+            const result = await Pedometer.getStepCountAsync(start, end);
+            if (result) {
+              setPastStepCount(result.steps);
+              lastSavedStepsRef.current = result.steps;
+            }
+          } catch (e) {
+            console.log("getStepCountAsync non supportato o errore:", e);
+          }
         }
+        // Nota: Su Android NON facciamo nulla, teniamo i passi caricati dal DB in setup()
 
         return Pedometer.watchStepCount((stepResult) => {
           setCurrentStepCount(stepResult.steps);
           const total = pastStepCountRef.current + stepResult.steps;
 
           if (total - lastSavedStepsRef.current >= 10) {
-            // Ridotto a 10 per test più veloci
+            // Salva ogni 10 passi per test immediato
             const today = format(new Date(), "yyyy-MM-dd");
             saveDailySteps(today, total);
             lastSavedStepsRef.current = total;

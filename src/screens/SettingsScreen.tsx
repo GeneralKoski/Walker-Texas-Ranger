@@ -51,12 +51,6 @@ const SettingsScreen = ({
             ? "Permesso Negato ❌"
             : `Stato: ${isPedometerAvailable}`}
       </Text>
-      {isPedometerAvailable !== "true" && (
-        <Text style={styles.debugHint}>
-          Assicurati di aver dato il permesso 'Attività fisica' nelle
-          impostazioni del telefono.
-        </Text>
-      )}
     </GlassCard>
   </View>
 );
