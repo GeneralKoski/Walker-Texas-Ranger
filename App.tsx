@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { Pedometer } from "expo-sensors";
 import type { Subscription } from "expo-sensors/build/Pedometer";
 import { useEffect, useRef, useState } from "react";
-import { Alert, StatusBar, StyleSheet, Text, View } from "react-native";
+import { Alert, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -114,10 +114,6 @@ export default function App() {
         <View style={styles.background} />
 
         <SafeAreaView style={styles.safeArea}>
-          <View style={styles.topBar}>
-            <Text style={styles.appTitle}>Walker Texas Ranger</Text>
-          </View>
-
           {currentTab === "home" && (
             <DashboardScreen
               steps={totalSteps}
@@ -145,6 +141,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
+    paddingTop: 20,
   },
   background: {
     ...StyleSheet.absoluteFillObject,
@@ -152,12 +149,6 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-  },
-  topBar: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    flexDirection: "row",
-    justifyContent: "center",
   },
   appTitle: {
     fontSize: 22,

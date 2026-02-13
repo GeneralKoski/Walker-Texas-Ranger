@@ -1,4 +1,4 @@
-import { Flame, Trophy } from "lucide-react-native";
+import { Flame, TrendingUp, Trophy } from "lucide-react-native";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 import GlassCard from "../components/GlassCard";
@@ -42,20 +42,29 @@ const DashboardScreen = ({
 
     <Text style={styles.sectionTitle}>Andamento Settimanale</Text>
     <GlassCard style={styles.weeklyCard}>
-      <BarChart
-        data={weeklyData}
-        barWidth={22}
-        noOfSections={3}
-        barBorderRadius={4}
-        frontColor="#FF6A00"
-        yAxisThickness={0}
-        xAxisThickness={0}
-        hideRules
-        isAnimated
-        animationDuration={1000}
-        xAxisLabelTextStyle={{ color: "#636E72", fontSize: 10 }}
-        yAxisTextStyle={{ color: "#636E72", fontSize: 10 }}
-      />
+      {weeklyData.length > 0 ? (
+        <BarChart
+          data={weeklyData}
+          barWidth={22}
+          noOfSections={3}
+          barBorderRadius={4}
+          frontColor="#FF6A00"
+          yAxisThickness={0}
+          xAxisThickness={0}
+          hideRules
+          isAnimated
+          animationDuration={1000}
+          xAxisLabelTextStyle={{ color: "#636E72", fontSize: 10 }}
+          yAxisTextStyle={{ color: "#636E72", fontSize: 10 }}
+        />
+      ) : (
+        <View style={styles.noDataContainer}>
+          <TrendingUp color="#DCDDE1" size={48} strokeWidth={1} />
+          <Text style={styles.noDataText}>
+            Ancora nessun dato per questa settimana. Inizia a camminare!
+          </Text>
+        </View>
+      )}
     </GlassCard>
 
     <View style={{ height: 100 }} />
@@ -99,6 +108,20 @@ const styles = StyleSheet.create({
   },
   weeklyCard: {
     paddingLeft: 0,
+  },
+  noDataContainer: {
+    height: 180,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 40,
+  },
+  noDataText: {
+    color: "#A0A0A0",
+    fontSize: 14,
+    marginTop: 15,
+    textAlign: "center",
+    lineHeight: 20,
   },
 });
 
