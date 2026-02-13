@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Ranger Walker",
-    "slug": "messenger-walker",
+    "name": "Walker Texas Ranger",
+    "slug": "walker-texas-ranger",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,9 +9,9 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.walkertexasranger",
+      "bundleIdentifier": "com.martin.walkertexasranger",
       "infoPlist": {
-        "NSMotionUsageDescription": "Ranger Walker ha bisogno di accedere ai dati di movimento per contare i tuoi passi."
+        "NSMotionUsageDescription": "Walker Texas Ranger ha bisogno di accedere ai dati di movimento per contare i tuoi passi."
       }
     },
     "android": {
@@ -19,7 +19,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#6A11CB"
       },
-      "package": "com.anonymous.walkertexasranger",
+      "package": "com.martin.walkertexasranger",
       "permissions": [
         "android.permission.ACTIVITY_RECOGNITION",
         "android.permission.FOREGROUND_SERVICE",
@@ -29,6 +29,6 @@
     "web": {
       "favicon": "./assets/favicon.ico"
     },
-    "plugins": ["expo-sensors"]
+    "plugins": ["expo-sensors", "expo-sqlite"]
   }
 }

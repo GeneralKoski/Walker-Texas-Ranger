@@ -1,13 +1,17 @@
 node_modules/
 .expo/
 dist/
+web-build/
+
+# Native build artifacts
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 *.orig.*
-web-build/
+ios/
+android/
 
 # macOS
 .DS_Store
@@ -21,3 +25,9 @@ web-build/
 
 # eas
 eas-build-*.json
+
+# TypeScript
+*.tsbuildinfo
+
+# npm
+npm-debug.log*

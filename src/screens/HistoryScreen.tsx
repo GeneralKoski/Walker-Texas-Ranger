@@ -12,13 +12,28 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import GlassCard from "../components/GlassCard";
 import { getStepsRange } from "../../db";
 
-const HistoryScreen = ({ dailyGoal }) => {
+interface HistoryItem {
+  id: number;
+  date: string;
+  count: number;
+}
+
+interface HistoryScreenProps {
+  dailyGoal: number;
+}
+
+interface DateRange {
+  start: Date;
+  end: Date;
+}
+
+const HistoryScreen = ({ dailyGoal }: HistoryScreenProps) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [historyRange, setHistoryRange] = useState({
+  const [historyRange, setHistoryRange] = useState<DateRange>({
     start: subDays(new Date(), 7),
     end: new Date(),
   });
-  const [historyData, setHistoryData] = useState([]);
+  const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
     loadHistory();
@@ -71,7 +86,7 @@ const HistoryScreen = ({ dailyGoal }) => {
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
-        onConfirm={(date) => {
+        onConfirm={(date: Date) => {
           setHistoryRange({ start: subDays(date, 7), end: date });
           setDatePickerVisibility(false);
         }}

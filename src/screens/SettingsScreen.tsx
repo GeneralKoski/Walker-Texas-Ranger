@@ -1,16 +1,25 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, type NativeSyntheticEvent, type TextInputEndEditingEventData, View } from "react-native";
 import GlassCard from "../components/GlassCard";
 
-const SettingsScreen = ({ dailyGoal, onUpdateGoal, isPedometerAvailable }) => (
+interface SettingsScreenProps {
+  dailyGoal: number;
+  onUpdateGoal: (val: string) => void;
+  isPedometerAvailable: string;
+}
+
+const SettingsScreen = ({ dailyGoal, onUpdateGoal, isPedometerAvailable }: SettingsScreenProps) => (
   <View style={styles.content}>
     <Text style={styles.sectionTitle}>Impostazioni</Text>
     <GlassCard style={styles.settingsCard}>
       <Text style={styles.label}>Obiettivo Giornaliero</Text>
       <TextInput
+        key={dailyGoal}
         style={styles.input}
         keyboardType="numeric"
         defaultValue={dailyGoal.toString()}
-        onEndEditing={(e) => onUpdateGoal(e.nativeEvent.text)}
+        onEndEditing={(e: NativeSyntheticEvent<TextInputEndEditingEventData>) =>
+          onUpdateGoal(e.nativeEvent.text)
+        }
         placeholderTextColor="rgba(255,255,255,0.5)"
       />
       <Text style={styles.settingsHint}>

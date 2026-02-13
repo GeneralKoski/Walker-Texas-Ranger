@@ -1,11 +1,21 @@
 import { format } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { Pedometer } from "expo-sensors";
-import { useEffect, useState } from "react";
-import { Alert, SafeAreaView, StatusBar, StyleSheet, Text, View } from "react-native";
+import type { Subscription } from "expo-sensors/build/Pedometer";
+import { useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import TabBar from "./src/components/TabBar";
-import DashboardScreen from "./src/screens/DashboardScreen";
+import TabBar, { type TabKey } from "./src/components/TabBar";
+import DashboardScreen, {
+  type WeeklyDataItem,
+} from "./src/screens/DashboardScreen";
 import HistoryScreen from "./src/screens/HistoryScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
 import {
@@ -22,24 +32,40 @@ export default function App() {
   const [pastStepCount, setPastStepCount] = useState(0);
   const [currentStepCount, setCurrentStepCount] = useState(0);
   const [dailyGoal, setDailyGoal] = useState(10000);
-  const [weeklyData, setWeeklyData] = useState([]);
-  const [currentTab, setCurrentTab] = useState("home");
+  const [weeklyData, setWeeklyData] = useState<WeeklyDataItem[]>([]);
+  const [currentTab, setCurrentTab] = useState<TabKey>("home");
+
+  const pastStepCountRef = useRef(pastStepCount);
+  pastStepCountRef.current = pastStepCount;
 
   const totalSteps = pastStepCount + currentStepCount;
 
   useEffect(() => {
-    setup();
-    subscribe();
+    let subscription: Subscription | null = null;
+
+    const init = async () => {
+      await setup();
+      const sub = await subscribe();
+      if (sub) {
+        subscription = sub;
+      }
+    };
+    init();
+
+    return () => {
+      if (subscription) {
+        subscription.remove();
+      }
+    };
   }, []);
 
-  // Check goal achievement
   useEffect(() => {
     if (totalSteps >= dailyGoal && pastStepCount < dailyGoal) {
       Alert.alert("Obiettivo Raggiunto!", "Grande lavoro oggi!");
     }
   }, [totalSteps, dailyGoal]);
 
-  const setup = async () => {
+  const setup = async (): Promise<void> => {
     await initDatabase();
     const goal = await getTarget();
     setDailyGoal(goal);
@@ -49,7 +75,7 @@ export default function App() {
     setPastStepCount(savedSteps);
 
     const weekly = await getWeeklySteps();
-    const formattedWeekly = weekly.reverse().map((item) => ({
+    const formattedWeekly: WeeklyDataItem[] = weekly.reverse().map((item) => ({
       value: item.count,
       label: format(new Date(item.date), "EEE"),
       frontColor: "#FF7E5F",
@@ -58,7 +84,7 @@ export default function App() {
     setWeeklyData(formattedWeekly);
   };
 
-  const subscribe = async () => {
+  const subscribe = async (): Promise<Subscription | undefined> => {
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
 
@@ -72,16 +98,16 @@ export default function App() {
         setPastStepCount(result.steps);
       }
 
-      return Pedometer.watchStepCount((result) => {
-        setCurrentStepCount(result.steps);
+      return Pedometer.watchStepCount((stepResult) => {
+        setCurrentStepCount(stepResult.steps);
         const today = format(new Date(), "yyyy-MM-dd");
-        saveDailySteps(today, pastStepCount + result.steps);
+        saveDailySteps(today, pastStepCountRef.current + stepResult.steps);
       });
     }
   };
 
-  const handleUpdateGoal = async (val) => {
-    const newGoal = parseInt(val);
+  const handleUpdateGoal = async (val: string): Promise<void> => {
+    const newGoal = parseInt(val, 10);
     if (!isNaN(newGoal) && newGoal > 0) {
       setDailyGoal(newGoal);
       await setTarget(newGoal);
@@ -98,7 +124,7 @@ export default function App() {
 
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.topBar}>
-          <Text style={styles.appTitle}>Ranger Walker</Text>
+          <Text style={styles.appTitle}>Walker Texas Ranger</Text>
         </View>
 
         {currentTab === "home" && (
@@ -108,9 +134,7 @@ export default function App() {
             weeklyData={weeklyData}
           />
         )}
-        {currentTab === "history" && (
-          <HistoryScreen dailyGoal={dailyGoal} />
-        )}
+        {currentTab === "history" && <HistoryScreen dailyGoal={dailyGoal} />}
         {currentTab === "settings" && (
           <SettingsScreen
             dailyGoal={dailyGoal}

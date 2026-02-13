@@ -1,8 +1,19 @@
 import * as SQLite from "expo-sqlite";
 
+interface DailyStepsRow {
+  id: number;
+  date: string;
+  count: number;
+}
+
+interface SettingsRow {
+  key: string;
+  value: string;
+}
+
 const db = SQLite.openDatabaseSync("pedometer.db");
 
-export const initDatabase = async () => {
+export const initDatabase = async (): Promise<void> => {
   await db.execAsync(`
     PRAGMA journal_mode = WAL;
     CREATE TABLE IF NOT EXISTS daily_steps (
@@ -17,46 +28,48 @@ export const initDatabase = async () => {
   `);
 };
 
-export const saveDailySteps = async (date, count) => {
+export const saveDailySteps = async (date: string, count: number): Promise<void> => {
   await db.runAsync(
     "INSERT OR REPLACE INTO daily_steps (date, count) VALUES (?, ?);",
     [date, count],
   );
 };
 
-export const getStepsByDate = async (date) => {
-  const result = await db.getFirstAsync(
+export const getStepsByDate = async (date: string): Promise<number> => {
+  const result = await db.getFirstAsync<DailyStepsRow>(
     "SELECT count FROM daily_steps WHERE date = ?;",
     [date],
   );
   return result ? result.count : 0;
 };
 
-export const getStepsRange = async (startDate, endDate) => {
-  return await db.getAllAsync(
+export const getStepsRange = async (
+  startDate: string,
+  endDate: string,
+): Promise<DailyStepsRow[]> => {
+  return await db.getAllAsync<DailyStepsRow>(
     "SELECT * FROM daily_steps WHERE date BETWEEN ? AND ? ORDER BY date DESC;",
     [startDate, endDate],
   );
 };
 
-export const getWeeklySteps = async () => {
-  // Get last 7 days
-  return await db.getAllAsync(
+export const getWeeklySteps = async (): Promise<DailyStepsRow[]> => {
+  return await db.getAllAsync<DailyStepsRow>(
     "SELECT * FROM daily_steps ORDER BY date DESC LIMIT 7;",
   );
 };
 
-export const setTarget = async (target) => {
+export const setTarget = async (target: number): Promise<void> => {
   await db.runAsync(
     "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?);",
     ["daily_goal", target.toString()],
   );
 };
 
-export const getTarget = async () => {
-  const result = await db.getFirstAsync(
+export const getTarget = async (): Promise<number> => {
+  const result = await db.getFirstAsync<SettingsRow>(
     "SELECT value FROM settings WHERE key = ?;",
     ["daily_goal"],
   );
-  return result ? parseInt(result.value) : 10000;
+  return result ? parseInt(result.value, 10) : 10000;
 };

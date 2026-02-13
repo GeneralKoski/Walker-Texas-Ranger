@@ -4,7 +4,20 @@ import { BarChart } from "react-native-gifted-charts";
 import GlassCard from "../components/GlassCard";
 import ProgressRing from "../components/ProgressRing";
 
-const DashboardScreen = ({ steps, dailyGoal, weeklyData }) => (
+export interface WeeklyDataItem {
+  value: number;
+  label: string;
+  frontColor: string;
+  gradientColor: string;
+}
+
+interface DashboardScreenProps {
+  steps: number;
+  dailyGoal: number;
+  weeklyData: WeeklyDataItem[];
+}
+
+const DashboardScreen = ({ steps, dailyGoal, weeklyData }: DashboardScreenProps) => (
   <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
     <GlassCard style={styles.mainProgressCard}>
       <ProgressRing steps={steps} dailyGoal={dailyGoal} />
@@ -40,7 +53,7 @@ const DashboardScreen = ({ steps, dailyGoal, weeklyData }) => (
         hideRules
         isAnimated
         animationDuration={1000}
-        labelTextStyle={{ color: "white", fontSize: 10 }}
+        xAxisLabelTextStyle={{ color: "white", fontSize: 10 }}
         yAxisTextStyle={{ color: "white", fontSize: 10 }}
       />
     </GlassCard>

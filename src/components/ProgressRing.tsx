@@ -10,11 +10,16 @@ import Svg, { Circle } from "react-native-svg";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const ProgressRing = ({ steps, dailyGoal }) => {
+interface ProgressRingProps {
+  steps: number;
+  dailyGoal: number;
+}
+
+const ProgressRing = ({ steps, dailyGoal }: ProgressRingProps) => {
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    const percentage = Math.min(steps / dailyGoal, 1);
+    const percentage = dailyGoal > 0 ? Math.min(steps / dailyGoal, 1) : 0;
     progress.value = withSpring(percentage, { damping: 15 });
   }, [steps, dailyGoal]);
 
