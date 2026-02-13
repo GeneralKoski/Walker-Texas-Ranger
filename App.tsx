@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { Pedometer } from "expo-sensors";
 import type { Subscription } from "expo-sensors/build/Pedometer";
 import { useEffect, useRef, useState } from "react";
-import { Alert, StatusBar, StyleSheet, View } from "react-native";
+import { Alert, AppState, StatusBar, StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -13,6 +13,7 @@ import {
   saveDailySteps,
   setTarget,
 } from "./db";
+
 import TabBar, { type TabKey } from "./src/components/TabBar";
 import DashboardScreen, {
   type WeeklyDataItem,
@@ -29,8 +30,10 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<TabKey>("home");
 
   const pastStepCountRef = useRef(pastStepCount);
-  pastStepCountRef.current = pastStepCount;
+  const lastSavedStepsRef = useRef(0);
+  const appState = useRef(AppState.currentState);
 
+  pastStepCountRef.current = pastStepCount;
   const totalSteps = pastStepCount + currentStepCount;
 
   useEffect(() => {
@@ -45,12 +48,27 @@ export default function App() {
     };
     init();
 
+    // Salva quando l'app viene chiusa o messa in background
+    const appStateSub = AppState.addEventListener("change", (nextAppState) => {
+      if (
+        appState.current === "active" &&
+        nextAppState.match(/inactive|background/)
+      ) {
+        saveDailySteps(
+          format(new Date(), "yyyy-MM-dd"),
+          pastStepCountRef.current + currentStepCount,
+        );
+      }
+      appState.current = nextAppState;
+    });
+
     return () => {
       if (subscription) {
         subscription.remove();
       }
+      appStateSub.remove();
     };
-  }, []);
+  }, [currentStepCount]);
 
   useEffect(() => {
     if (totalSteps >= dailyGoal && pastStepCount < dailyGoal) {
@@ -66,13 +84,14 @@ export default function App() {
     const today = format(new Date(), "yyyy-MM-dd");
     const savedSteps = await getStepsByDate(today);
     setPastStepCount(savedSteps);
+    lastSavedStepsRef.current = savedSteps;
 
     const weekly = await getWeeklySteps();
     const formattedWeekly: WeeklyDataItem[] = weekly.reverse().map((item) => ({
       value: item.count,
       label: format(new Date(item.date), "EEE"),
-      frontColor: "#FF7E5F",
-      gradientColor: "#FEB47B",
+      frontColor: "#FF6A00",
+      gradientColor: "#FF8C00",
     }));
     setWeeklyData(formattedWeekly);
   };
@@ -82,6 +101,13 @@ export default function App() {
     setIsPedometerAvailable(String(isAvailable));
 
     if (isAvailable) {
+      // Richiedi esplicitamente i permessi (fondamentale su Android/iOS)
+      const { status } = await Pedometer.requestPermissionsAsync();
+      if (status !== "granted") {
+        setIsPedometerAvailable("denied");
+        return;
+      }
+
       const start = new Date();
       start.setHours(0, 0, 0, 0);
       const end = new Date();
@@ -89,12 +115,19 @@ export default function App() {
       const result = await Pedometer.getStepCountAsync(start, end);
       if (result) {
         setPastStepCount(result.steps);
+        lastSavedStepsRef.current = result.steps;
       }
 
       return Pedometer.watchStepCount((stepResult) => {
         setCurrentStepCount(stepResult.steps);
-        const today = format(new Date(), "yyyy-MM-dd");
-        saveDailySteps(today, pastStepCountRef.current + stepResult.steps);
+        const total = pastStepCountRef.current + stepResult.steps;
+
+        // Salva nel DB solo ogni 100 passi per risparmiare batteria
+        if (total - lastSavedStepsRef.current >= 100) {
+          const today = format(new Date(), "yyyy-MM-dd");
+          saveDailySteps(today, total);
+          lastSavedStepsRef.current = total;
+        }
       });
     }
   };

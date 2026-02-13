@@ -55,7 +55,7 @@ const HistoryScreen = ({ dailyGoal }: HistoryScreenProps) => {
           onPress={() => setDatePickerVisibility(true)}
           style={styles.filterBtn}
         >
-          <Text style={styles.filterBtnText}>Filtra Data</Text>
+          <Text style={styles.filterBtnText}>Scegli Data</Text>
         </TouchableOpacity>
       </View>
 

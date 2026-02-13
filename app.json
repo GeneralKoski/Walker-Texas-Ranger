@@ -17,7 +17,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#6A11CB"
+        "backgroundColor": "#FFFFFF"
       },
       "package": "com.martin.walkertexasranger",
       "permissions": [
@@ -29,6 +29,14 @@
     "web": {
       "favicon": "./assets/favicon.ico"
     },
-    "plugins": ["expo-sensors", "expo-sqlite"]
+    "plugins": [
+      "expo-sensors",
+      "expo-sqlite"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b26d9c0e-f9c0-46c7-99d3-9831b315314d"
+      }
+    }
   }
 }
