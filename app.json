@@ -27,12 +27,9 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.ico"
+      "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-sensors",
-      "expo-sqlite"
-    ],
+    "plugins": ["expo-sensors", "expo-sqlite", "expo-notifications"],
     "extra": {
       "eas": {
         "projectId": "b26d9c0e-f9c0-46c7-99d3-9831b315314d"

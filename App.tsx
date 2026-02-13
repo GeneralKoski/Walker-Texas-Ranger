@@ -1,8 +1,16 @@
 import { format } from "date-fns";
+import * as Notifications from "expo-notifications";
 import { Pedometer } from "expo-sensors";
 import type { Subscription } from "expo-sensors/build/Pedometer";
 import { useEffect, useRef, useState } from "react";
-import { Alert, AppState, StatusBar, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  AppState,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+} from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import {
@@ -21,6 +29,19 @@ import DashboardScreen, {
 import HistoryScreen from "./src/screens/HistoryScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
 
+// Configurazione Notifiche
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+const STICKY_NOTIFICATION_ID = "step-counter-notification";
+
 export default function App() {
   const [isPedometerAvailable, setIsPedometerAvailable] = useState("checking");
   const [pastStepCount, setPastStepCount] = useState(0);
@@ -30,11 +51,45 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState<TabKey>("home");
 
   const pastStepCountRef = useRef(pastStepCount);
+  const currentStepCountRef = useRef(currentStepCount);
   const lastSavedStepsRef = useRef(0);
   const appState = useRef(AppState.currentState);
 
   pastStepCountRef.current = pastStepCount;
+  currentStepCountRef.current = currentStepCount;
   const totalSteps = pastStepCount + currentStepCount;
+
+  // Funzione per aggiornare la notifica persistente
+  const updateStickyNotification = async (steps: number) => {
+    if (Platform.OS === "web") return;
+
+    try {
+      const kcal = (steps * 0.04).toFixed(0);
+      const km = (steps * 0.0008).toFixed(1);
+
+      await Notifications.setNotificationChannelAsync("pedometer-channel", {
+        name: "Contapassi",
+        importance: Notifications.AndroidImportance.LOW,
+        showBadge: false,
+        lockscreenVisibility:
+          Notifications.AndroidNotificationVisibility.PUBLIC,
+      });
+
+      await Notifications.scheduleNotificationAsync({
+        identifier: STICKY_NOTIFICATION_ID,
+        content: {
+          title: "Walker Texas Ranger",
+          body: `👣 ${steps} passi | 🔥 ${kcal} kcal | 📍 ${km} km`,
+          sticky: true,
+          autoDismiss: false,
+          color: "#FF6A00",
+        },
+        trigger: null, // trigger null = immediata
+      });
+    } catch (error) {
+      console.log("Error updating notification:", error);
+    }
+  };
 
   useEffect(() => {
     let subscription: Subscription | null = null;
@@ -56,7 +111,7 @@ export default function App() {
       ) {
         saveDailySteps(
           format(new Date(), "yyyy-MM-dd"),
-          pastStepCountRef.current + currentStepCount,
+          pastStepCountRef.current + currentStepCountRef.current,
         );
       }
       appState.current = nextAppState;
@@ -67,13 +122,21 @@ export default function App() {
         subscription.remove();
       }
       appStateSub.remove();
+      // Rimuovi la notifica quando l'app viene chiusa (opzionale)
+      // Notifications.dismissNotificationAsync(STICKY_NOTIFICATION_ID);
     };
-  }, [currentStepCount]);
+  }, []);
 
   useEffect(() => {
-    if (totalSteps >= dailyGoal && pastStepCount < dailyGoal) {
+    if (
+      totalSteps >= dailyGoal &&
+      pastStepCount < dailyGoal &&
+      totalSteps > 0
+    ) {
       Alert.alert("Obiettivo Raggiunto!", "Grande lavoro oggi!");
     }
+    // Aggiorna la notifica ogni volta che cambiano i passi
+    updateStickyNotification(totalSteps);
   }, [totalSteps, dailyGoal]);
 
   const setup = async (): Promise<void> => {
@@ -97,38 +160,42 @@ export default function App() {
   };
 
   const subscribe = async (): Promise<Subscription | undefined> => {
-    const isAvailable = await Pedometer.isAvailableAsync();
-    setIsPedometerAvailable(String(isAvailable));
+    try {
+      const isAvailable = await Pedometer.isAvailableAsync();
+      setIsPedometerAvailable(String(isAvailable));
 
-    if (isAvailable) {
-      // Richiedi esplicitamente i permessi (fondamentale su Android/iOS)
-      const { status } = await Pedometer.requestPermissionsAsync();
-      if (status !== "granted") {
-        setIsPedometerAvailable("denied");
-        return;
-      }
-
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
-      const end = new Date();
-
-      const result = await Pedometer.getStepCountAsync(start, end);
-      if (result) {
-        setPastStepCount(result.steps);
-        lastSavedStepsRef.current = result.steps;
-      }
-
-      return Pedometer.watchStepCount((stepResult) => {
-        setCurrentStepCount(stepResult.steps);
-        const total = pastStepCountRef.current + stepResult.steps;
-
-        // Salva nel DB solo ogni 100 passi per risparmiare batteria
-        if (total - lastSavedStepsRef.current >= 100) {
-          const today = format(new Date(), "yyyy-MM-dd");
-          saveDailySteps(today, total);
-          lastSavedStepsRef.current = total;
+      if (isAvailable) {
+        const { status } = await Pedometer.requestPermissionsAsync();
+        if (status !== "granted") {
+          setIsPedometerAvailable("permission_denied");
+          return;
         }
-      });
+
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+        const end = new Date();
+
+        // Forza un refresh dei passi dall'hardware all'avvio
+        const result = await Pedometer.getStepCountAsync(start, end);
+        if (result) {
+          setPastStepCount(result.steps);
+          lastSavedStepsRef.current = result.steps;
+        }
+
+        return Pedometer.watchStepCount((stepResult) => {
+          setCurrentStepCount(stepResult.steps);
+          const total = pastStepCountRef.current + stepResult.steps;
+
+          if (total - lastSavedStepsRef.current >= 10) {
+            // Ridotto a 10 per test più veloci
+            const today = format(new Date(), "yyyy-MM-dd");
+            saveDailySteps(today, total);
+            lastSavedStepsRef.current = total;
+          }
+        });
+      }
+    } catch (e) {
+      setIsPedometerAvailable("error: " + String(e));
     }
   };
 

@@ -40,11 +40,23 @@ const SettingsScreen = ({
 
     <GlassCard style={styles.aboutCard}>
       <Text style={styles.aboutTitle}>Informazioni App</Text>
-      <Text style={styles.aboutText}>Versione: 2.0.0 (Advanced)</Text>
+      <Text style={styles.aboutText}>
+        Versione: 2.1.0 (Sticky Notification)
+      </Text>
       <Text style={styles.aboutText}>
         Sensore:{" "}
-        {isPedometerAvailable === "true" ? "Attivo" : "Non Disponibile"}
+        {isPedometerAvailable === "true"
+          ? "Attivo ✅"
+          : isPedometerAvailable === "permission_denied"
+            ? "Permesso Negato ❌"
+            : `Stato: ${isPedometerAvailable}`}
       </Text>
+      {isPedometerAvailable !== "true" && (
+        <Text style={styles.debugHint}>
+          Assicurati di aver dato il permesso 'Attività fisica' nelle
+          impostazioni del telefono.
+        </Text>
+      )}
     </GlassCard>
   </View>
 );
@@ -95,6 +107,12 @@ const styles = StyleSheet.create({
     color: "#636E72",
     fontSize: 14,
     marginBottom: 5,
+  },
+  debugHint: {
+    color: "#FF4757",
+    fontSize: 12,
+    marginTop: 10,
+    fontStyle: "italic",
   },
 });
 
